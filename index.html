@@ -38,7 +38,7 @@
 
           for (let i = 0; i < 50; i++) { // Rango hasta 5 euros
             document.write("<tr>");
-            for (let j = 0; j < 10; j++) {
+            for (let j = 0; j < 7; j++) {
               let valor = (euros + centimos / 100).toFixed(2);
               let claseResaltada = (valor == 0.05 || valor == 0.10 || valor == 0.50 || valor == 2.00) ? "highlight" : "";
               document.write(`<td class="${claseResaltada}" data-valor="${valor}">${valor} €</td>`);
