@@ -36,16 +36,22 @@
           let euros = 0;
           let centimos = 1;
 
-          for (let i = 0; i < 50; i++) { // Rango hasta 5 euros
+          // Modificar para generar exactamente hasta 5 euros (500 céntimos)
+          let limite = 500; 
+          let cantidadCeldas = Math.ceil(limite / 7); // Cantidad de filas necesarias
+
+          for (let i = 0; i < cantidadCeldas; i++) { // Generar filas
             document.write("<tr>");
-            for (let j = 0; j < 7; j++) {
-              let valor = (euros + centimos / 100).toFixed(2);
-              let claseResaltada = (valor == 0.05 || valor == 0.10 || valor == 0.50 || valor == 2.00) ? "highlight" : "";
-              document.write(`<td class="${claseResaltada}" data-valor="${valor}">${valor} €</td>`);
-              centimos++;
-              if (centimos > 100) {
-                centimos = 1;
-                euros++;
+            for (let j = 0; j < 7; j++) { // Generar columnas
+              if ((euros * 100 + centimos) <= limite) {
+                let valor = (euros + centimos / 100).toFixed(2);
+                let claseResaltada = (valor == 0.05 || valor == 0.10 || valor == 0.50 || valor == 2.00) ? "highlight" : "";
+                document.write(`<td class="${claseResaltada}" data-valor="${valor}">${valor} €</td>`);
+                centimos++;
+                if (centimos >= 100) {
+                  centimos = 0;
+                  euros++;
+                }
               }
             }
             document.write("</tr>");
