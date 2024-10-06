@@ -13,10 +13,10 @@
       margin-top: 50px;
     }
     .highlight, .selected {
-      background-color: ; /* Color resaltado */
+      background-color: #ffeeba; /* Color resaltado */
     }
     .selected {
-      background-color: #4c9141 !important; /* Cambiar a color rojo las celdas seleccionadas */
+      background-color: rgb(10, 241, 10) !important; /* Cambiar a color rojo las celdas seleccionadas */
       color: white;
     }
   </style>
@@ -25,10 +25,10 @@
 
   <div class="container table-container">
     <h1 class="text-center mb-4">Tabla de Ahorro</h1>
+    <p class="text-center">Total seleccionado: <span id="contador">0.00</span> €</p> <!-- Contador de euros -->
     
     <table class="table table-bordered">
       <thead class="table-dark">
-
       </thead>
       <tbody id="tabla-body">
         <script>
@@ -57,15 +57,18 @@
             document.write("</tr>");
           }
 
-          // Función para cargar las celdas seleccionadas desde localStorage
+          // Función para cargar las celdas seleccionadas desde localStorage y sumar los valores
           function cargarSeleccionadas() {
             let seleccionadas = JSON.parse(localStorage.getItem('celdasSeleccionadas')) || [];
+            let total = 0;
             seleccionadas.forEach(function(valor) {
               let celda = document.querySelector(`td[data-valor="${valor}"]`);
               if (celda) {
                 celda.classList.add('selected');
+                total += parseFloat(valor); // Sumar el valor en euros
               }
             });
+            document.getElementById('contador').innerText = total.toFixed(2); // Mostrar total acumulado
           }
 
           // Función para guardar las celdas seleccionadas en localStorage
@@ -77,13 +80,19 @@
             localStorage.setItem('celdasSeleccionadas', JSON.stringify(seleccionadas));
           }
 
-          // Evento para marcar una celda como seleccionada al hacer clic
+          // Evento para marcar una celda como seleccionada al hacer clic y sumar su valor
           document.addEventListener('DOMContentLoaded', function() {
             cargarSeleccionadas(); // Cargar celdas seleccionadas previamente
             document.querySelectorAll('td').forEach(function(celda) {
               celda.addEventListener('click', function() {
-                celda.classList.toggle('selected'); // Alternar la clase 'selected' (rojo)
-                guardarSeleccionadas(); // Guardar cambios en localStorage
+                if (!celda.classList.contains('selected')) { // Verificar si no está ya seleccionada
+                  celda.classList.add('selected'); // Marcar la celda
+                  let valor = parseFloat(celda.getAttribute('data-valor')); // Obtener valor de la celda
+                  let total = parseFloat(document.getElementById('contador').innerText); // Obtener total actual
+                  total += valor; // Sumar valor de la celda al total
+                  document.getElementById('contador').innerText = total.toFixed(2); // Actualizar total en el contador
+                  guardarSeleccionadas(); // Guardar cambios en localStorage
+                }
               });
             });
           });
