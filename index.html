@@ -25,7 +25,7 @@
 
   <div class="container table-container">
     <h1 class="text-center mb-4">Tabla de Ahorro</h1>
-    <p class="text-center">Total seleccionado: <span id="contador">0.00</span> €</p> <!-- Contador de euros -->
+    <p class="text-center">Total Aseleccionado: <span id="contador">0.00</span> €</p> <!-- Contador de euros -->
     
     <table class="table table-bordered">
       <thead class="table-dark">
@@ -35,18 +35,16 @@
           // Generar la tabla con céntimos y euros
           let euros = 0;
           let centimos = 1;
-          let limite = 500;
+
+          // Modificar para generar exactamente hasta 5 euros (500 céntimos)
+          let limite = 500; 
           let cantidadCeldas = Math.ceil(limite / 7); // Cantidad de filas necesarias
-          
+
           for (let i = 0; i < cantidadCeldas; i++) { // Generar filas
             document.write("<tr>");
-            document.write(`<td>Fila ${i + 1}</td>`); // Número de fila
-
-            let sumaFila = 0; // Acumulador para la suma de la fila
             for (let j = 0; j < 7; j++) { // Generar columnas
               if ((euros * 100 + centimos) <= limite) {
                 let valor = (euros + centimos / 100).toFixed(2);
-                sumaFila += parseFloat(valor); // Sumar el valor a la fila
                 let claseResaltada = (valor == 0.05 || valor == 0.10 || valor == 0.50 || valor == 2.00) ? "highlight" : "";
                 document.write(`<td class="${claseResaltada}" data-valor="${valor}">${valor} €</td>`);
                 centimos++;
@@ -56,7 +54,6 @@
                 }
               }
             }
-            document.write(`<td class="pendiente">Pendiente: <span data-total-fila="${sumaFila.toFixed(2)}">${sumaFila.toFixed(2)}</span> €</td>`); // Cantidad pendiente de marcar
             document.write("</tr>");
           }
 
@@ -68,11 +65,10 @@
               let celda = document.querySelector(`td[data-valor="${valor}"]`);
               if (celda) {
                 celda.classList.add('selected');
-                total += parseFloat(valor);
+                total += parseFloat(valor); // Sumar el valor en euros
               }
             });
-            document.getElementById('contador').innerText = total.toFixed(2);
-            actualizarPendientes(); // Actualizar la cantidad pendiente por fila
+            document.getElementById('contador').innerText = total.toFixed(2); // Mostrar total acumulado
           }
 
           // Función para guardar las celdas seleccionadas en localStorage
@@ -84,35 +80,18 @@
             localStorage.setItem('celdasSeleccionadas', JSON.stringify(seleccionadas));
           }
 
-          // Función para actualizar las cantidades pendientes en cada fila
-          function actualizarPendientes() {
-            document.querySelectorAll('tr').forEach(function(fila) {
-              let totalFila = parseFloat(fila.querySelector('[data-total-fila]')?.getAttribute('data-total-fila')) || 0;
-              let seleccionadasFila = 0;
-              fila.querySelectorAll('.selected').forEach(function(celda) {
-                seleccionadasFila += parseFloat(celda.getAttribute('data-valor'));
-              });
-              let pendiente = totalFila - seleccionadasFila;
-              let spanPendiente = fila.querySelector('.pendiente span');
-              if (spanPendiente) {
-                spanPendiente.innerText = pendiente.toFixed(2);
-              }
-            });
-          }
-
           // Evento para marcar una celda como seleccionada al hacer clic y sumar su valor
           document.addEventListener('DOMContentLoaded', function() {
-            cargarSeleccionadas();
-            document.querySelectorAll('td[data-valor]').forEach(function(celda) {
+            cargarSeleccionadas(); // Cargar celdas seleccionadas previamente
+            document.querySelectorAll('td').forEach(function(celda) {
               celda.addEventListener('click', function() {
-                if (!celda.classList.contains('selected')) {
-                  celda.classList.add('selected');
-                  let valor = parseFloat(celda.getAttribute('data-valor'));
-                  let total = parseFloat(document.getElementById('contador').innerText);
-                  total += valor;
-                  document.getElementById('contador').innerText = total.toFixed(2);
-                  guardarSeleccionadas();
-                  actualizarPendientes(); // Actualizar pendientes tras seleccionar
+                if (!celda.classList.contains('selected')) { // Verificar si no está ya seleccionada
+                  celda.classList.add('selected'); // Marcar la celda
+                  let valor = parseFloat(celda.getAttribute('data-valor')); // Obtener valor de la celda
+                  let total = parseFloat(document.getElementById('contador').innerText); // Obtener total actual
+                  total += valor; // Sumar valor de la celda al total
+                  document.getElementById('contador').innerText = total.toFixed(2); // Actualizar total en el contador
+                  guardarSeleccionadas(); // Guardar cambios en localStorage
                 }
               });
             });
